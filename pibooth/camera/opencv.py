@@ -95,6 +95,7 @@ class CvCamera(BaseCamera):
         """Capture a new preview image.
         """
         rect = self.get_rect()
+        self._cam.set(cv2.CAP_PROP_FPS, self.preview_fps)
 
         ret, image = self._cam.read()
         if not ret:

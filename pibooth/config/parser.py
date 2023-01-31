@@ -196,6 +196,10 @@ DEFAULT = odict((
                 (False,
                  "Delete captures from camera internal memory (when applicable)",
                  None, None)),
+            ("fps",
+                (30,
+                 "Camera FPS )",
+                 None, None)),
         ))
      ),
     ("PRINTER",
