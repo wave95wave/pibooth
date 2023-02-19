@@ -305,6 +305,14 @@ class PiWindow(object):
         else:
             self._update_background(background.FinishedBackground())
 
+    def show_shutdown(self):
+        """Show shutdown view.
+        """
+        self._capture_number = (0, self._capture_number[1])
+        self._update_background(background.ShutdownBackground())
+        time.sleep(3)
+        os.system("sudo poweroff")
+
     @contextlib.contextmanager
     def flash(self, count):
         """Flash the window content.

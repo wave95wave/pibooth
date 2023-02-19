@@ -37,6 +37,7 @@ class BaseCamera(object):
                     "Invalid {} camera rotation value '{}' (should be 0, 90, 180 or 270)".format(name, rotation))
         self.resolution = resolution
         self.capture_flip = flip
+        self.preview_flip = flip
         self.preview_fps = fps
         if not isinstance(iso, (tuple, list)):
             iso = (iso, iso)

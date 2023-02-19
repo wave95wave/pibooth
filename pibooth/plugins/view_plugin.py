@@ -185,3 +185,7 @@ class ViewPlugin(object):
     def state_finish_validate(self):
         if self.finish_timer.is_timeout():
             return 'wait'
+
+    @pibooth.hookimpl
+    def state_shutdown_enter(self, win):
+        win.show_shutdown()

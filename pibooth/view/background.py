@@ -674,6 +674,17 @@ class FinishedWithImageBackground(FinishedBackground):
                 self._outlines.append((self._make_outlines(left_rect.size), left_rect.topleft))
                 self._outlines.append((self._make_outlines(right_rect.size), right_rect.topleft))
 
+class ShutdownBackground(Background):
+
+    def __init__(self):
+        Background.__init__(self, "shutdown")
+
+    def resize_texts(self):
+        """Update text surfaces.
+        """
+        rect = pygame.Rect(self._text_border, self._rect.height * 0.8 - self._text_border,
+                           self._rect.width - 2 * self._text_border, self._rect.height * 0.2)
+        Background.resize_texts(self, rect)
 
 class OopsBackground(Background):
 

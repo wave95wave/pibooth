@@ -12,7 +12,7 @@ import logging
 import argparse
 import multiprocessing
 from warnings import filterwarnings
-
+import time
 import pygame
 from gpiozero import Device, ButtonBoard, LEDBoard, pi_info
 from gpiozero.exc import BadPinFactory, PinFactoryFallback
@@ -113,6 +113,7 @@ class PiApplication(object):
         self._machine.add_state('processing')
         self._machine.add_state('print')
         self._machine.add_state('finish')
+        self._machine.add_state('shutdown')
 
         # ---------------------------------------------------------------------
         # Variables shared with plugins
@@ -132,10 +133,12 @@ class PiApplication(object):
 
         self.buttons = ButtonBoard(capture="BOARD" + config.get('CONTROLS', 'picture_btn_pin'),
                                    printer="BOARD" + config.get('CONTROLS', 'print_btn_pin'),
+                                   shutdown="BOARD" + config.get('CONTROLS', 'shutdown_btn_pin'),
                                    hold_time=config.getfloat('CONTROLS', 'debounce_delay'),
                                    pull_up=True)
         self.buttons.capture.when_held = self._on_button_capture_held
         self.buttons.printer.when_held = self._on_button_printer_held
+        self.buttons.shutdown.when_held = self._on_button_shutdown_held
 
         self.leds = LEDBoard(capture="BOARD" + config.get('CONTROLS', 'picture_led_pin'),
                              printer="BOARD" + config.get('CONTROLS', 'print_led_pin'))
@@ -154,7 +157,7 @@ class PiApplication(object):
         # Handle the language configuration
         language.CURRENT = self._config.get('GENERAL', 'language')
         fonts.CURRENT = fonts.get_filename(self._config.get('WINDOW', 'font'))
-
+                
         # Set the captures choices
         choices = self._config.gettuple('PICTURE', 'captures', int)
         for chx in choices:
@@ -246,6 +249,11 @@ class PiApplication(object):
                                            button=self.buttons.printer)
                 LOGGER.debug("BUTTONDOWN: generate PRINTER event")
             pygame.event.post(event)
+    def _on_button_shutdown_held(self):
+        """Called when the capture button shutdown is pressed.
+        """
+        LOGGER.info("Arrêt demandé")     
+        self._machine.set_state('shutdown') 
 
     @property
     def picture_filename(self):
@@ -366,7 +374,7 @@ class PiApplication(object):
 
     def main_loop(self):
         try:
-            fps = 40
+            fps = 60
             clock = pygame.time.Clock()
             self._initialize()
             self._pm.hook.pibooth_startup(cfg=self._config, app=self)
@@ -486,6 +494,7 @@ def main():
         config.save(default=True)
         plugin_manager.hook.pibooth_reset(cfg=config, hard=True)
     else:
+        LOGGER.info("********** VERSION SEB *******************")
         LOGGER.info("Starting the photo booth application %s", GPIO_INFO)
         app = PiApplication(config, plugin_manager)
         app.main_loop()

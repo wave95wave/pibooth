@@ -100,6 +100,7 @@ class CvCamera(BaseCamera):
         ret, image = self._cam.read()
         if not ret:
             raise IOError("Can not get camera preview image")
+        LOGGER.debug("********* preview_rotation is %s", self.preview_rotation)
         image = self._rotate_image(image, self.preview_rotation)
 
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -112,8 +113,9 @@ class CvCamera(BaseCamera):
         size = sizing.new_size_keep_aspect_ratio((width, height), (rect.width, rect.height), 'outer')
         image = cv2.resize(image, size, interpolation=cv2.INTER_AREA)
 
-        if self.preview_flip:
-            image = cv2.flip(image, 1)
+        # LOGGER.debug("********* preview_flip is %s", self.preview_flip)
+        # if self.preview_flip:
+        #     image = cv2.flip(image, 1)
 
         if self._overlay is not None:
             if self._overlay.shape != image.shape:
@@ -140,6 +142,7 @@ class CvCamera(BaseCamera):
         size = sizing.new_size_keep_aspect_ratio((width, height), self.resolution, 'outer')
         image = cv2.resize(image, size, interpolation=cv2.INTER_AREA)
 
+        LOGGER.debug("********* capture_flip is %s", self.capture_flip)
         if self.capture_flip:
             image = cv2.flip(image, 1)
 
@@ -219,6 +222,7 @@ class CvCamera(BaseCamera):
         ret, image = self._cam.read()
         if not ret:
             raise IOError("Can not capture frame")
+        LOGGER.debug("********* capture_rotation is %s", self.capture_rotation)
         image = self._rotate_image(image, self.capture_rotation)
 
         LOGGER.debug("Putting preview resolution back to %s", self._preview_resolution)
